@@ -48,7 +48,7 @@ docker compose down -v               # остановить и удалить Б
 | `role "postgres" does not exist` | Создаётся только пользователь `campus` (POSTGRES_USER). Подключайтесь так: `docker compose exec db psql -U campus -d campus`. |
 | `role "root" does not exist` | `psql` без `-U` берёт имя пользователя ОС; всегда указывайте `-U campus`. |
 | `Bind for 0.0.0.0:3000 failed: port is already allocated` | Порт 3000 занят другим процессом или контейнером. Найти: `docker ps --filter publish=3000` и `netstat -ano \| findstr :3000` (Windows) / `ss -ltnp \| grep :3000`. Освободить (`docker stop <id>`, `taskkill /PID <pid> /F`) или поменять порт в `docker-compose.yml` на `"3001:3000"` — тогда API будет на `http://localhost:3001`. |
-| `port is already allocated` для 5432 | Локальный PostgreSQL уже слушает 5432. В compose порт БД привязан к `127.0.0.1`; если он всё равно занят — закомментируйте блок `ports` у `db`: контейнеру API БД доступна по имени `db` без публикации порта. |
+| `socket access forbidden by permissions` / `port is already allocated` для 5432 | Windows (Hyper-V/WSL) резервирует диапазоны TCP-портов, либо 5432 занят локальным PostgreSQL. В compose порт БД наружу **не публикуется** — контейнер API обращается к ней по имени `db`. Для `psql` с хоста раскомментируйте блок `ports` у `db`, выбрав свободный порт (например `127.0.0.1:5433:5432`). |
 
 ## Быстрый старт (без Docker)
 
