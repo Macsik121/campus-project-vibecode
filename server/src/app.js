@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
@@ -16,9 +17,17 @@ function createApp() {
 
   app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'campus-api' }));
 
-  // Swagger UI (ТЗ: при разработке сервера использовался Swagger)
+  // Swagger UI (ТЗ: при разработке сервера использовался Swagger).
+  // Локально: <repo>/server/src -> <repo>/docs/swagger.yaml (../../docs).
+  // В контейнере: /app/src -> /app/docs/swagger.yaml (../docs, см. server/Dockerfile).
+  const swaggerPath = [
+    path.join(__dirname, '..', '..', 'docs', 'swagger.yaml'),
+    path.join(__dirname, '..', 'docs', 'swagger.yaml'),
+  ].find((p) => fs.existsSync(p));
+
   try {
-    const swaggerDoc = YAML.load(path.join(__dirname, '../../docs/swagger.yaml'));
+    if (!swaggerPath) throw new Error('swagger.yaml не найден ни в ../../docs, ни в ../docs');
+    const swaggerDoc = YAML.load(swaggerPath);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
   } catch (err) {
     console.warn('[app] swagger.yaml не найден, /api-docs отключён:', err.message);

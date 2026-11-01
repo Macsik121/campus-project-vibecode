@@ -1,3 +1,6 @@
 plugins {
     id 'com.android.application' version '8.5.2' apply false
 }
+
+// Адрес API для телефона без правки кода: строка `campus.apiBaseUrl=...` в local.properties
+// или -PcampusApiBaseUrl=... при сборке. app/build.gradle читает local.properties сам.

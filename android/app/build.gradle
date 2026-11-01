@@ -12,8 +12,20 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0.0"
-        // Адрес API: 10.0.2.2 — хост-машина из эмулятора Android
-        buildConfigField "String", "BASE_URL", "\"http://10.0.2.2:3000/\""
+        // Адрес API. По умолчанию 10.0.2.2 — это «localhost компьютера» из эмулятора Android.
+        // Приоритет: -PcampusApiBaseUrl=... при сборке → campus.apiBaseUrl в android/local.properties
+        //            → адрес эмулятора. Примеры:
+        //   ./gradlew assembleDebug -PcampusApiBaseUrl=http://192.168.1.50:3000/
+        //   echo 'campus.apiBaseUrl=http://192.168.1.50:3000/' >> local.properties
+        def localProps = new Properties()
+        def localPropsFile = rootProject.file('local.properties')
+        if (localPropsFile.exists()) {
+            localPropsFile.withInputStream { localProps.load(it) }
+        }
+        def apiBaseUrl = project.findProperty('campusApiBaseUrl')
+                ?: localProps.getProperty('campus.apiBaseUrl')
+                ?: "http://10.0.2.2:3000/"
+        buildConfigField "String", "BASE_URL", "\"${apiBaseUrl}\""
     }
 
     buildFeatures {

@@ -16,12 +16,27 @@
 
 ## Быстрый старт (Docker)
 
+Из корня репозитория (`/campus`, где лежит `docker-compose.yml`):
+
 ```bash
 docker compose up --build -d
 docker compose exec server node src/db/seed.js   # демо-данные (однократно)
+docker compose ps                                # оба сервиса должны быть healthy/running
 ```
 
 API: `http://localhost:3000/api/v1` · Swagger UI: `http://localhost:3000/api-docs`
+
+Контекст сборки — корень репозитория, Dockerfile — `server/Dockerfile` (пути внутри него начинаются
+с `server/` и `docs/`). Если после обновления кода сборка странно кэшируется — `docker compose build --no-cache server`.
+
+Логи и управление:
+
+```bash
+docker compose logs -f server        # логи API (миграции применяются при старте)
+docker compose exec db psql -U campus -d campus -c '\dt'
+docker compose down                  # остановить (данные остаются в volume pgdata)
+docker compose down -v               # остановить и удалить БД
+```
 
 ## Быстрый старт (без Docker)
 
@@ -67,16 +82,114 @@ WebSocket (socket.io): JWT на handshake (`auth.token`); события `notifi
 
 Нативное, Java + XML (по ТЗ). Стек: Retrofit2/OkHttp (Bearer из SharedPreferences), Gson, socket.io-client, Material Components, ViewBinding.
 
+Требуется JDK 17 и Android SDK (compileSdk 34); в Android Studio они уже есть, из консоли — задать
+`JAVA_HOME` и `ANDROID_HOME` (или `sdk.dir` в `android/local.properties`).
+
 ```bash
 cd android
 ./gradlew assembleDebug     # APK: app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Готовый debug-APK уже собран и лежит в `app/build/outputs/apk/debug/app-debug.apk` (~6.5 МБ) —
-можно сразу ставить на эмулятор/устройство (`adb install`).
+Готовый debug-APK уже собран и лежит в `app/build/outputs/apk/debug/app-debug.apk` (~6.4 МБ)
+и собран с адресом API `http://10.0.2.2:3000/` — это адрес **эмулятора**, на реальном телефоне
+он не работает. Для телефона соберите APK под IP своего компьютера (шаг 2 ниже).
 
-Либо открыть папку `android/` в Android Studio и Run. Адрес API — `BASE_URL` в `app/build.gradle`
-(по умолчанию `http://10.0.2.2:3000/` — хост-машина из эмулятора; для реального устройства укажите IP компьютера).
+### Запуск на телефоне — по шагам
+
+**0. Предусловия**
+
+- Сервер CAMPUS уже запущен на компьютере (Docker: `docker compose up -d` и seed — см. выше;
+  или `npm start` в `server/`). Проверка с компьютера: `curl http://localhost:3000/health` → `{"status":"ok"}`.
+- Телефон и компьютер в **одной Wi-Fi/локальной сети** (телефон через мобильный интернет до IP вида
+  `192.168.x.x` не достучится).
+- Либо подключён USB-кабель к компьютеру, где установлен Android SDK (команда `adb`).
+
+**1. Узнать IP компьютера в локальной сети**
+
+```bash
+# Linux / macOS
+ip -4 addr show | grep -oP 'inet \K[\d.]+' | grep -v 127.0.0.1   # или: hostname -I
+# Windows (cmd)
+ipconfig        # строка «IPv4-адрес», например 192.168.1.50
+```
+
+Пример: компьютер — `192.168.1.50`, значит адрес API для телефона — `http://192.168.1.50:3000/`
+(в конце обязательно слеш `/`).
+
+**2. Собрать APK с этим адресом (правка кода не нужна)**
+
+```bash
+cd android
+./gradlew assembleDebug -PcampusApiBaseUrl=http://192.168.1.50:3000/
+```
+
+Либо один раз записать адрес в `android/local.properties` и дальше собирать обычным `./gradlew assembleDebug`:
+
+```properties
+sdk.dir=/путь/до/Android/Sdk
+campus.apiBaseUrl=http://192.168.1.50:3000/
+```
+
+Приоритет: `-PcampusApiBaseUrl` → `campus.apiBaseUrl` в `local.properties` → `http://10.0.2.2:3000/` (эмулятор).
+`local.properties` в git не коммитится — у каждого разработчика свой адрес.
+
+**3. Установить APK на телефон**
+
+Вариант A — по USB (быстрее, нужен `adb` из Android SDK):
+
+1. На телефоне: **Настройки → О телефоне → 7 раз нажать «Номер сборки»** (включатся параметры разработчика).
+2. **Настройки → Система → Для разработчиков → Отладка по USB** — включить.
+3. Подключить телефон кабелем; на телефоне подтвердить «Разрешить отладку с этого компьютера».
+4. Установить и запустить:
+
+```bash
+adb devices                                                    # телефон должен быть в списке как "device"
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n ru.campus.app/.ui.auth.LoginActivity     # открыть приложение
+```
+
+Вариант B — по Wi-Fi, без кабеля:
+
+1. Android 11+: **Настройки → Для разработчиков → Отладка по Wi-Fi → Использовать код сопряжения**.
+   На телефоне появятся `IP:порт` и код. На компьютере:
+
+```bash
+adb pair 192.168.1.77:37453        # IP:порт из «Сопряжения», затем ввести 6-значный код
+adb connect 192.168.1.77:5555      # IP:порт из раздела «Отладка по Wi-Fi»
+adb devices
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+2. Android 10 и ниже: подключить телефон по USB один раз и выполнить
+   `adb tcpip 5555`, затем `adb connect 192.168.1.77:5555` (IP телефона: Настройки → О телефоне → IP-адрес),
+   после чего кабель можно отключить.
+
+Вариант C — отправить APK на телефон (мессенджер, кабель, облако) и открыть его файловым менеджером.
+Android попросит разрешить установку из этого источника — разрешить. Такой способ удобен, если нет `adb`.
+
+**4. Проверить и войти**
+
+1. Приложение открывается на экране входа. Логины из seed: `ivan@campus.ru` (вожатый, есть отряд),
+   `senior@campus.ru`, `director@campus.ru`; пароль у всех — `Password1!`.
+2. Если видна ошибка сети — по порядку: сервер запущен? IP в `BASE_URL` совпадает с выводом шага 1
+   (после смены IP его нужно пересобрать)? телефон в той же сети? фаервол компьютера не блокирует порт 3000?
+   Проверка с телефона в браузере: открыть `http://192.168.1.50:3000/health` — должен вернуться JSON.
+3. Что показывает собранный адрес (диагностика): `strings app/build/outputs/apk/debug/app-debug.apk | grep 3000`
+   или в Android Studio — `BuildConfig.BASE_URL`; на телефоне — `adb logcat | grep okhttp`.
+
+Фаервол (если браузер телефона не открывает `/health`):
+
+```bash
+sudo ufw allow 3000/tcp          # Ubuntu
+# Windows: разрешить Nginx/Node.js «частные сети» в окне запроса или:
+netsh advfirewall firewall add rule name="CAMPUS API" dir=in action=allow protocol=TCP localport=3000
+```
+
+**5. Альтернатива — Android Studio**
+
+Открыть папку `android/` (File → Open), дождаться Gradle Sync, в `local.properties` добавить
+`campus.apiBaseUrl=http://192.168.1.50:3000/`, подключить телефон (шаг 3), выбрать его в списке
+устройств и нажать **Run ▶** (`Shift+F10`). Логи — вкладка **Logcat**.
 
 Разделы (bottomNavigationView, по ролям): Отряд, Журнал, Уведомления, Карта (заглушка MVP), Чат, Профиль;
 senior+ — Логи и Заявки; director — Статистика. Токен хранится в SharedPreferences; «Выход» очищает его
