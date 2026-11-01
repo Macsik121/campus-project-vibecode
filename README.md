@@ -38,6 +38,17 @@ docker compose down                  # остановить (данные ост
 docker compose down -v               # остановить и удалить БД
 ```
 
+### Диагностика Docker (частые ошибки)
+
+| Сообщение | Причина и решение |
+|---|---|
+| `failed to fetch oauth token … lookup auth.docker.io: no such host` | Docker не может выйти в интернет (нет доступа к registry-1.docker.io — VPN, прокси, антивирус, блокировка). Нужен доступ к `registry-1.docker.io` и `auth.docker.io`; при прокси — Docker Desktop → Settings → Resources → Proxies. После первой успешной загрузки образов сеть нужна только для pull новых образов. |
+| `COPY package.json … /src: not found` | Dockerfile старый — обновите его (`COPY server/package.json …`, `COPY server/src ./src`), затем `docker compose build --no-cache server`. |
+| `The server does not support SSL connections` | В `DATABASE_URL` есть `sslmode=require`/`verify-full`. Обновите `docker-compose.yml` (БД без sslmode), `server/src/db/pool.js` (TLS выключен; включается только `DATABASE_SSL=true`), затем `docker compose up -d --build`. |
+| `role "postgres" does not exist` | Создаётся только пользователь `campus` (POSTGRES_USER). Подключайтесь так: `docker compose exec db psql -U campus -d campus`. |
+| `role "root" does not exist` | `psql` без `-U` берёт имя пользователя ОС; всегда указывайте `-U campus`. |
+| Порт 3000 или 5432 занят | `port is already allocated` — остановите локальный PostgreSQL/сервер или поменяйте левую часть `ports` в `docker-compose.yml`. |
+
 ## Быстрый старт (без Docker)
 
 ```bash
@@ -236,7 +247,8 @@ Middleware-матрица по ТЗ: публичные login/register — то�
 Create/Update/Delete — auth + Logger (+ roleGuard). Логи действий пишутся в `action_logs` на каждую
 изменяющую операцию (список случаев из ТЗ «Логи действий»).
 
-ENV-переменные (см. `.env.example`): `JWT_SECRET`, `BASE_DB_TYPE` (postgres), `DATABASE_URL`, `PORT`, `JWT_EXPIRES_IN`.
+ENV-переменные (см. `.env.example`): `JWT_SECRET`, `BASE_DB_TYPE` (postgres), `DATABASE_URL`, `PORT`, `JWT_EXPIRES_IN`;
+`DATABASE_SSL=true` — только для БД с TLS (managed-хостинг). По умолчанию TLS выключен.
 
 ## Тестирование
 
