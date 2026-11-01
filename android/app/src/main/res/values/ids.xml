@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ID для динамически добавляемых пунктов bottom-навигации по ролям -->
+    <item name="nav_logs" type="id" />
+    <item name="nav_applications" type="id" />
+    <item name="nav_stats" type="id" />
+</resources>

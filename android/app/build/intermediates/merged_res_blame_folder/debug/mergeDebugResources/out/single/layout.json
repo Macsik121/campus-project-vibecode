@@ -1,0 +1,98 @@
+[
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_squad.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_squad.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_logs.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_logs.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_chat.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_chat.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/dialog_notes.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/dialog_notes.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_chat_message.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_chat_message.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_applications.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_applications.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_stats.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_stats.xml"
+    },
+    {
+        "merged": "ru.campus.app-mergeDebugResources-3:/layout/item_application.xml",
+        "source": "ru.campus.app-main-6:/layout/item_application.xml"
+    },
+    {
+        "merged": "ru.campus.app-mergeDebugResources-3:/layout/item_child.xml",
+        "source": "ru.campus.app-main-6:/layout/item_child.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_log.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_log.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_attendance.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_attendance.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_child.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_child.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_map.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_map.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_profile.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_profile.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_notification.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_notification.xml"
+    },
+    {
+        "merged": "ru.campus.app-mergeDebugResources-3:/layout/activity_main.xml",
+        "source": "ru.campus.app-main-6:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_notifications.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_notifications.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/fragment_journal.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_journal.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_event.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_event.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/item_application.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_application.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/dialog_password.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/dialog_password.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/activity_login.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/activity_login.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/activity_register.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/activity_register.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-mergeDebugResources-3:/layout/activity_main.xml",
+        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/activity_main.xml"
+    }
+]
