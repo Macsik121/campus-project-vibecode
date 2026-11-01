@@ -1,0 +1,1432 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Лагерь-Вожатый API"
+  description: "API для управления педагогическими отрядами, детьми, мероприятиями и уведомлениями. Расширено разделами: заявки вожатых, логи, статистика, чат."
+host: "localhost:3000"
+basePath: "/api/v1"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+tags:
+  - name: "auth"
+    description: "Авторизация и регистрация пользователей"
+  - name: "squads"
+    description: "Управление отрядами и назначение вожатых"
+  - name: "notifications"
+    description: "Уведомления системы"
+  - name: "journal"
+    description: "Мероприятия и посещаемость"
+  - name: "profile"
+    description: "Профиль пользователя"
+  - name: "tags"
+    description: "Теги детей (только для старшего вожатого)"
+  - name: "applications"
+    description: "Заявки вожатых (старший вожатый / директор)"
+  - name: "logs"
+    description: "Логи действий (старший вожатый / директор)"
+  - name: "stats"
+    description: "Статистика смены (директор)"
+  - name: "chat"
+    description: "Общий чат"
+  - name: "users"
+    description: "Данные текущего пользователя"
+paths:
+  /auth/login:
+    post:
+      tags: ["auth"]
+      summary: "Вход пользователя в систему"
+      operationId: "loginUser"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginRequest"
+      responses:
+        "200":
+          description: "Успешный вход, возвращается JWT токен"
+          schema:
+            $ref: "#/definitions/AuthResponse"
+        "400":
+          description: "Ошибка валидации (пустые поля, некорректная почта)"
+        "401":
+          description: "Неправильный логин или пароль"
+        "403":
+          description: "Заявка не одобрена (ACCOUNT_PENDING) или аккаунт отклонён/удалён (ACCOUNT_REJECTED)"
+  /auth/register:
+    post:
+      tags: ["auth"]
+      summary: "Регистрация нового пользователя (создание заявки вожатого)"
+      operationId: "registerUser"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RegisterRequest"
+      responses:
+        "200":
+          description: "Заявка подана; вход возможен после одобрения директором/старшим вожатым"
+          schema:
+            $ref: "#/definitions/RegisterResponse"
+        "400":
+          description: "Пользователь с данной почтой уже существует или ошибка валидации"
+  /auth/verify-jwt:
+    get:
+      tags: ["auth"]
+      summary: "Проверка валидности JWT токена"
+      operationId: "verifyJwt"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Токен валиден"
+        "401":
+          description: "Токен недействителен или отсутствует"
+  /auth/verify-senior-counselour-rights:
+    get:
+      tags: ["auth"]
+      summary: "Проверка прав старшего вожатого или выше"
+      operationId: "verifySeniorCounselourRights"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Прав достаточно"
+        "403":
+          description: "Прав не достаточно. Человек обычный вожатый."
+  /auth/verify-director-rights:
+    get:
+      tags: ["auth"]
+      summary: "Проверка прав директора"
+      operationId: "verifyDirectorRights"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Прав достаточно"
+        "403":
+          description: "Прав не достаточно. Человек обычный или старший вожатый."
+  /squads:
+    get:
+      tags: ["squads"]
+      summary: "Список всех отрядов (с количеством детей и вожатыми)"
+      operationId: "listSquads"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Список отрядов"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/SquadListItem"
+        "401":
+          description: "Неавторизованный доступ"
+    post:
+      tags: ["squads"]
+      summary: "Создание нового отряда"
+      description: "Создаёт отряд в начале смены. Доступно старшему вожатому или директору."
+      operationId: "createSquad"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateSeveralSquadsRequest"
+      responses:
+        "200":
+          description: "Отряд успешно создан"
+          schema:
+            $ref: "#/definitions/CreateSquadResponse"
+        "401":
+          description: "Невалидный токен"
+        "403":
+          description: "Данный пользователь не может создавать отряды"
+  /squads/reassign-user:
+    post:
+      tags: ["squads"]
+      summary: "Назначение вожатого в отряд"
+      operationId: "reassignUserToSquad"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/AssignUserRequest"
+      responses:
+        "200":
+          description: "Назначение выполнено успешно"
+          schema:
+            $ref: "#/definitions/AssignUserResponse"
+        "401":
+          description: "Пользователь не авторизован"
+        "403":
+          description: "Недостаточно прав"
+        "404":
+          description: "Пользователь или отряд с переданным ID не найден"
+  /squads/{squadId}/children:
+    get:
+      tags: ["squads"]
+      summary: "Получить список детей в отряде"
+      operationId: "getChildrenBySquad"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "squadId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "200":
+          description: "Данные отряда и список детей"
+          schema:
+            $ref: "#/definitions/GetSquadChildrenResponse"
+        "401":
+          description: "Неавторизованный доступ"
+        "403":
+          description: "Нет назначения на данный отряд"
+        "404":
+          description: "Отряд не найден"
+  /children:
+    post:
+      tags: ["squads"]
+      summary: "Создать ребёнка"
+      description: "Доступно только старшему вожатому и директору"
+      operationId: "createChild"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Child"
+      responses:
+        "200":
+          description: "Ребёнок создан"
+          schema:
+            $ref: "#/definitions/Child"
+        "400":
+          description: "Ошибка валидации: Id не должен быть указан при создании, или одно из полей пустое"
+        "403":
+          description: "Создавать ребёнка может только старший вожатый и директор"
+    put:
+      tags: ["squads"]
+      summary: "Обновить данные ребёнка (заметки и пр.)"
+      operationId: "updateChild"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Child"
+      responses:
+        "200":
+          description: "Данные обновлены"
+          schema:
+            $ref: "#/definitions/Child"
+        "400":
+          description: "Некорректные данные"
+        "403":
+          description: "Вожатый не назначен на отряд и не старший вожатый"
+        "404":
+          description: "Ребёнок не найден"
+  /children/{childId}:
+    delete:
+      tags: ["squads"]
+      summary: "Удалить ребёнка из отряда (soft-delete)"
+      description: "Запись остаётся в системе с пометкой (deleted_at), из отряда отвязывается"
+      operationId: "deleteChild"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "childId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "204":
+          description: "Ребёнок успешно удалён"
+        "401":
+          description: "Неавторизованный доступ"
+        "403":
+          description: "Нет прав на изменение чужого отряда"
+        "404":
+          description: "Ребёнок не найден"
+  /children/detached:
+    get:
+      tags: ["squads"]
+      summary: "Дети, не привязанные ни к одному отряду"
+      operationId: "getDetachedChildren"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Список детей"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Child"
+        "403":
+          description: "Нужны права старшего вожатого или директора"
+  /children/change-child-to-squad:
+    post:
+      tags: ["squads"]
+      summary: "Привязать/отвязать ребёнка к отряду"
+      operationId: "changeChildForSquad"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ChangeChildForSquadRequest"
+      responses:
+        "200":
+          description: "Ребёнок привязан или отвязан"
+          schema:
+            $ref: "#/definitions/ChangeChildForSquadResponse"
+        "403":
+          description: "Только старший вожатый и директор"
+        "404":
+          description: "Ребёнок или отряд не найден"
+  /children/{childId}/tags:
+    get:
+      tags: ["squads"]
+      summary: "Получить теги ребёнка"
+      operationId: "getChildTags"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "childId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "200":
+          description: "Список тегов"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ChildTag"
+        "404":
+          description: "У ребёнка не найдены теги"
+  /children/tags:
+    post:
+      tags: ["tags"]
+      summary: "Создать тег для ребёнка"
+      operationId: "createChildTag"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateTagRequest"
+      responses:
+        "201":
+          description: "Тег создан"
+          schema:
+            $ref: "#/definitions/Tag"
+        "400":
+          description: "Ошибка валидации"
+        "403":
+          description: "Нет назначения у вожатого"
+        "404":
+          description: "Ребёнок не найден"
+    put:
+      tags: ["tags"]
+      summary: "Обновить тег ребёнка"
+      operationId: "updateChildTag"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/TagRequest"
+      responses:
+        "200":
+          description: "Тег обновлён"
+          schema:
+            $ref: "#/definitions/Tag"
+        "404":
+          description: "Тег не найден"
+    delete:
+      tags: ["tags"]
+      summary: "Удалить тег ребёнка"
+      operationId: "deleteChildTag"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/TagRequest"
+      responses:
+        "204":
+          description: "Тег удалён"
+        "404":
+          description: "Тег не найден"
+  /notifications:
+    post:
+      tags: ["notifications"]
+      summary: "Создать уведомление (только старший вожатый/директор)"
+      operationId: "createNotification"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateNotificationRequest"
+      responses:
+        "201":
+          description: "Уведомление создано и разослано по WebSocket"
+          schema:
+            $ref: "#/definitions/Notification"
+        "403":
+          description: "Только старший вожатый может создавать уведомления"
+    get:
+      tags: ["notifications"]
+      summary: "Получить список уведомлений текущего пользователя"
+      operationId: "getNotifications"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "limit"
+          in: "query"
+          required: false
+          type: "integer"
+          default: 20
+      responses:
+        "200":
+          description: "Список уведомлений + счётчик непрочитанных"
+          schema:
+            $ref: "#/definitions/NotificationsListResponse"
+    put:
+      tags: ["notifications"]
+      summary: "Обновить уведомление (сбрасывает прочитанность у всех)"
+      operationId: "updateNotification"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateNotificationRequest"
+      responses:
+        "200":
+          description: "Уведомление обновлено"
+          schema:
+            $ref: "#/definitions/Notification"
+        "403":
+          description: "Только старший вожатый"
+        "404":
+          description: "Не найдено"
+    delete:
+      tags: ["notifications"]
+      summary: "Удалить уведомление"
+      operationId: "deleteNotification"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "notificationId"
+          in: "query"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "204":
+          description: "Удалено"
+        "404":
+          description: "Не найдено"
+  /notifications/read:
+    post:
+      tags: ["notifications"]
+      summary: "Пометить уведомление прочитанным"
+      operationId: "readNotification"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ReadNotificationRequest"
+      responses:
+        "201":
+          description: "Прочитано"
+          schema:
+            $ref: "#/definitions/ReadNotificationResponse"
+        "404":
+          description: "Нет такого уведомления"
+  /notifications/read-all:
+    post:
+      tags: ["notifications"]
+      summary: "Пометить все уведомления прочитанными"
+      operationId: "readAllNotifications"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Все прочитаны"
+  /events:
+    post:
+      tags: ["journal"]
+      summary: "Создать мероприятие (старший вожатый/директор)"
+      description: "Строки посещаемости создаются автоматически для всех детей отряда (is_present=false)"
+      operationId: "createEvent"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateEventRequest"
+      responses:
+        "201":
+          description: "Создано"
+          schema:
+            $ref: "#/definitions/Event"
+        "400":
+          description: "Ошибка валидации (время, длительность >= 10 мин)"
+        "403":
+          description: "Недостаточно прав"
+    get:
+      tags: ["journal"]
+      summary: "Список мероприятий (фильтр Журнала по дате)"
+      description: "Выбранная дата и текущая образуют интервал; событие должно полностью входить в него"
+      operationId: "getEvents"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "date"
+          in: "query"
+          required: false
+          type: "string"
+          format: "date"
+        - name: "limit"
+          in: "query"
+          required: false
+          type: "integer"
+      responses:
+        "200":
+          description: "Список"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Event"
+    put:
+      tags: ["journal"]
+      summary: "Обновить мероприятие"
+      operationId: "updateEvent"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Event"
+      responses:
+        "200":
+          description: "Обновлено"
+          schema:
+            $ref: "#/definitions/Event"
+        "403":
+          description: "Только старший вожатый"
+        "404":
+          description: "Не найдено"
+  /events/{eventId}:
+    delete:
+      tags: ["journal"]
+      summary: "Удалить мероприятие"
+      operationId: "deleteEvent"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "204":
+          description: "Удалено"
+        "404":
+          description: "Не найдено"
+  /events/{eventId}/attendance/{squadId}:
+    get:
+      tags: ["journal"]
+      summary: "Список детей, отмеченных на мероприятии"
+      operationId: "getEventAttendance"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+        - name: "squadId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "200":
+          description: "Список childIds"
+          schema:
+            $ref: "#/definitions/GetAttendanceResponse"
+  /events/{eventId}/attendance:
+    post:
+      tags: ["journal"]
+      summary: "Отметить/снять посещаемость"
+      operationId: "updateAttendance"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateAttendanceRequest"
+      responses:
+        "200":
+          description: "Обновлено"
+          schema:
+            $ref: "#/definitions/UpdateAttendanceResponse"
+        "400":
+          description: "Уже отмечен / не был отмечен"
+        "403":
+          description: "Отмечать может только назначенный вожатый или старший"
+        "404":
+          description: "Ребёнок или мероприятие не найдены"
+  /users/squad:
+    get:
+      tags: ["users"]
+      summary: "Отряд текущего пользователя"
+      operationId: "getUserSquad"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Отряд пользователя"
+          schema:
+            type: "object"
+            properties:
+              squadId:
+                type: "string"
+                format: "uuid"
+        "404":
+          description: "Не привязан ни к одному отряду (код NO_SQUAD — клиент показывает заглушку)"
+  /users/profile:
+    get:
+      tags: ["profile"]
+      summary: "Профиль текущего пользователя"
+      operationId: "getUserProfile"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Профиль"
+          schema:
+            $ref: "#/definitions/UserProfile"
+    put:
+      tags: ["profile"]
+      summary: "Обновить профиль"
+      operationId: "updateUserProfile"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserProfile"
+      responses:
+        "200":
+          description: "Обновлён"
+          schema:
+            $ref: "#/definitions/UserProfile"
+        "404":
+          description: "Пользователь не найден"
+  /users/password:
+    put:
+      tags: ["profile"]
+      summary: "Сменить пароль"
+      operationId: "changePassword"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ChangePasswordRequest"
+      responses:
+        "200":
+          description: "Пароль изменён"
+        "401":
+          description: "Неверный текущий пароль"
+  /applications:
+    get:
+      tags: ["applications"]
+      summary: "Список заявок вожатых (старший вожатый/директор)"
+      operationId: "listApplications"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "status"
+          in: "query"
+          required: false
+          type: "string"
+          enum: ["pending", "approved", "rejected"]
+      responses:
+        "200":
+          description: "Список заявок"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Application"
+        "403":
+          description: "Нужны права старшего вожатого или директора"
+  /applications/{id}/approve:
+    post:
+      tags: ["applications"]
+      summary: "Одобрить заявку"
+      operationId: "approveApplication"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+      responses:
+        "200":
+          description: "Одобрена; пользователь активирован и зачислен на текущую смену"
+        "400":
+          description: "Заявка уже рассмотрена"
+        "404":
+          description: "Заявка не найдена"
+  /applications/{id}/reject:
+    post:
+      tags: ["applications"]
+      summary: "Отклонить заявку с причиной"
+      operationId: "rejectApplication"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          format: "uuid"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RejectRequest"
+      responses:
+        "200":
+          description: "Отклонена"
+        "400":
+          description: "Причина обязательна / уже рассмотрена"
+  /applications/reject-all:
+    post:
+      tags: ["applications"]
+      summary: "Отклонить все ожидающие заявки одной причиной"
+      description: "Типовая причина из ТЗ: «Необходимое количество вожатых на смену набралось»"
+      operationId: "rejectAllApplications"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RejectRequest"
+      responses:
+        "200":
+          description: "Количество отклонённых"
+  /logs:
+    get:
+      tags: ["logs"]
+      summary: "Логи действий (старший вожатый/директор)"
+      operationId: "getLogs"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "limit"
+          in: "query"
+          required: false
+          type: "integer"
+          default: 50
+        - name: "offset"
+          in: "query"
+          required: false
+          type: "integer"
+          default: 0
+      responses:
+        "200":
+          description: "Список логов"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ActionLog"
+        "403":
+          description: "Нужны права старшего вожатого или директора"
+  /stats/shift:
+    get:
+      tags: ["stats"]
+      summary: "Статистика текущей смены (директор)"
+      operationId: "getShiftStats"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Статистика"
+          schema:
+            $ref: "#/definitions/ShiftStats"
+        "403":
+          description: "Нужны права директора"
+  /chat/messages:
+    get:
+      tags: ["chat"]
+      summary: "История общего чата"
+      operationId: "chatHistory"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "limit"
+          in: "query"
+          required: false
+          type: "integer"
+          default: 50
+      responses:
+        "200":
+          description: "Сообщения"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ChatMessage"
+    post:
+      tags: ["chat"]
+      summary: "Отправить сообщение (также рассылается по WebSocket chat:message)"
+      operationId: "chatSend"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required: ["message"]
+            properties:
+              message:
+                type: "string"
+      responses:
+        "201":
+          description: "Отправлено"
+          schema:
+            $ref: "#/definitions/ChatMessage"
+securityDefinitions:
+  bearerAuth:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    description: "Введите токен в формате: Bearer <token>"
+definitions:
+  LoginRequest:
+    type: "object"
+    required: ["email", "password"]
+    properties:
+      email:
+        type: "string"
+        format: "email"
+        example: "ivan@campus.ru"
+      password:
+        type: "string"
+        example: "Password1!"
+  AuthResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+  RegisterRequest:
+    type: "object"
+    required: ["name", "email", "password"]
+    properties:
+      name:
+        type: "string"
+      email:
+        type: "string"
+        format: "email"
+      password:
+        type: "string"
+        description: "Не короче 6 символов, хотя бы 1 спецсимвол"
+  RegisterResponse:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+        format: "uuid"
+      message:
+        type: "string"
+  SquadInfo:
+    type: "object"
+    required: ["title"]
+    properties:
+      title:
+        type: "string"
+        example: "Капельки"
+      description:
+        type: "string"
+  CreateSeveralSquadsRequest:
+    type: "object"
+    properties:
+      squadsData:
+        type: "array"
+        items:
+          $ref: "#/definitions/SquadInfo"
+  CreateSquadResponse:
+    type: "object"
+    properties:
+      squadIds:
+        type: "array"
+        items:
+          type: "string"
+          format: "uuid"
+      userId:
+        type: "string"
+        format: "uuid"
+      date:
+        type: "string"
+        format: "date-time"
+  SquadListItem:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      title:
+        type: "string"
+      description:
+        type: "string"
+      children_count:
+        type: "integer"
+      counselours:
+        type: "array"
+        items:
+          type: "object"
+  AssignUserRequest:
+    type: "object"
+    required: ["squadId", "userId"]
+    properties:
+      squadId:
+        type: "string"
+        format: "uuid"
+      userId:
+        type: "string"
+        format: "uuid"
+  AssignUserResponse:
+    type: "object"
+    properties:
+      squadId:
+        type: "string"
+        format: "uuid"
+      userId:
+        type: "string"
+        format: "uuid"
+      oldSquadId:
+        type: "string"
+        format: "uuid"
+      date:
+        type: "string"
+        format: "date-time"
+  Child:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      fullName:
+        type: "string"
+      age:
+        type: "string"
+      parentFullName:
+        type: "string"
+      parentPhone:
+        type: "string"
+      notes:
+        type: "string"
+      squadId:
+        type: "string"
+        format: "uuid"
+      tags:
+        type: "array"
+        items:
+          $ref: "#/definitions/ChildTag"
+  ChildTag:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      type:
+        type: "string"
+        enum: ["warning", "alert", "health", "sports"]
+      info:
+        type: "string"
+  GetSquadChildrenResponse:
+    type: "object"
+    properties:
+      squadId:
+        type: "string"
+        format: "uuid"
+      squadTitle:
+        type: "string"
+      children:
+        type: "array"
+        items:
+          $ref: "#/definitions/Child"
+  ChangeChildForSquadRequest:
+    type: "object"
+    properties:
+      childId:
+        type: "string"
+        format: "uuid"
+      squadId:
+        type: "string"
+        format: "uuid"
+      attach:
+        type: "boolean"
+  ChangeChildForSquadResponse:
+    type: "object"
+    properties:
+      childId:
+        type: "string"
+        format: "uuid"
+      userId:
+        type: "string"
+        format: "uuid"
+      info:
+        type: "string"
+        enum: ["attached", "detached"]
+  CreateTagRequest:
+    type: "object"
+    required: ["childId", "tagType", "tagInfo"]
+    properties:
+      childId:
+        type: "string"
+        format: "uuid"
+      tagType:
+        type: "string"
+        enum: ["warning", "alert", "health", "sports"]
+      tagInfo:
+        type: "string"
+  TagRequest:
+    type: "object"
+    properties:
+      childId:
+        type: "string"
+        format: "uuid"
+      tag:
+        $ref: "#/definitions/ChildTag"
+  Tag:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      childId:
+        type: "string"
+        format: "uuid"
+      tagType:
+        type: "string"
+        enum: ["warning", "alert", "health", "sports"]
+      tagInfo:
+        type: "string"
+  Notification:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      title:
+        type: "string"
+      description:
+        type: "string"
+      kind:
+        type: "string"
+        enum: ["info", "important", "map"]
+      sentAt:
+        type: "string"
+        format: "date-time"
+      isRead:
+        type: "boolean"
+  CreateNotificationRequest:
+    type: "object"
+    required: ["title", "description"]
+    properties:
+      title:
+        type: "string"
+      description:
+        type: "string"
+      kind:
+        type: "string"
+        enum: ["info", "important", "map"]
+  NotificationsListResponse:
+    type: "object"
+    properties:
+      unreadCount:
+        type: "integer"
+      items:
+        type: "array"
+        items:
+          $ref: "#/definitions/Notification"
+  ReadNotificationRequest:
+    type: "object"
+    properties:
+      notifId:
+        type: "string"
+        format: "uuid"
+  ReadNotificationResponse:
+    type: "object"
+    properties:
+      notifId:
+        type: "string"
+        format: "uuid"
+      message:
+        type: "string"
+        default: "Read successfully"
+  UpdateNotificationRequest:
+    type: "object"
+    required: ["id"]
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      title:
+        type: "string"
+      description:
+        type: "string"
+  CreateEventRequest:
+    type: "object"
+    required: ["title", "timeFrom", "timeTo"]
+    properties:
+      title:
+        type: "string"
+      description:
+        type: "string"
+      eventType:
+        type: "string"
+        example: "football"
+      timeFrom:
+        type: "string"
+        format: "date-time"
+      timeTo:
+        type: "string"
+        format: "date-time"
+      squadId:
+        type: "string"
+        format: "uuid"
+        description: "Необязательно; если задан — событие отрядное"
+  Event:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      title:
+        type: "string"
+      description:
+        type: "string"
+      eventType:
+        type: "string"
+      timeFrom:
+        type: "string"
+        format: "date-time"
+      timeTo:
+        type: "string"
+        format: "date-time"
+      squadId:
+        type: "string"
+        format: "uuid"
+  GetAttendanceResponse:
+    type: "object"
+    properties:
+      childIds:
+        type: "array"
+        items:
+          type: "string"
+          format: "uuid"
+  UpdateAttendanceRequest:
+    type: "object"
+    required: ["childId", "present"]
+    properties:
+      childId:
+        type: "string"
+        format: "uuid"
+      present:
+        type: "boolean"
+  UpdateAttendanceResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+  UserProfile:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      fullName:
+        type: "string"
+      email:
+        type: "string"
+        format: "email"
+      role:
+        type: "string"
+        enum: ["counselour", "senior_counselour", "director"]
+      roleTitle:
+        type: "string"
+        example: "Вожатый"
+      avatar:
+        type: "string"
+      phoneNumber:
+        type: "string"
+      squad:
+        type: "object"
+        properties:
+          id:
+            type: "string"
+            format: "uuid"
+          title:
+            type: "string"
+  ChangePasswordRequest:
+    type: "object"
+    required: ["oldPassword", "newPassword"]
+    properties:
+      oldPassword:
+        type: "string"
+      newPassword:
+        type: "string"
+  Application:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      status:
+        type: "string"
+        enum: ["pending", "approved", "rejected"]
+      rejectReason:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      reviewedAt:
+        type: "string"
+        format: "date-time"
+      reviewerName:
+        type: "string"
+      user:
+        type: "object"
+        properties:
+          id:
+            type: "string"
+            format: "uuid"
+          fullName:
+            type: "string"
+          email:
+            type: "string"
+          phoneNumber:
+            type: "string"
+          role:
+            type: "string"
+  RejectRequest:
+    type: "object"
+    required: ["reason"]
+    properties:
+      reason:
+        type: "string"
+        example: "Необходимое количество вожатых на смену набралось"
+  ActionLog:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      event:
+        type: "string"
+      method:
+        type: "string"
+      path:
+        type: "string"
+      caused_by_name:
+        type: "string"
+      created_at:
+        type: "string"
+        format: "date-time"
+  ShiftStats:
+    type: "object"
+    properties:
+      shift:
+        type: "object"
+      eventsByType:
+        type: "array"
+        items:
+          type: "object"
+      attendance:
+        type: "object"
+        properties:
+          present:
+            type: "integer"
+          total:
+            type: "integer"
+      logsByMethod:
+        type: "array"
+        items:
+          type: "object"
+      warnings:
+        type: "array"
+        items:
+          type: "object"
+  ChatMessage:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      message:
+        type: "string"
+      sentAt:
+        type: "string"
+        format: "date-time"
+      senderId:
+        type: "string"
+        format: "uuid"
+      senderName:
+        type: "string"
+      senderRole:
+        type: "string"

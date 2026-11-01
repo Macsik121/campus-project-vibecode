@@ -1,0 +1,74 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Child" as Child
+actor "Admin" as Admin
+Child <|-- Admin : Extends
+
+usecase "Авторизация" as Auth
+usecase "Вход" as Login
+usecase "Регистрация" as Register
+usecase "Выход из аккаунта" as Logout
+
+usecase "Уведомления" as Notif
+usecase "Смотреть(R)" as NotifView
+usecase "Подтверждать\n(оповещать, submit - C)" as NotifConfirm
+usecase "Читать(помечать как прочитано - U)" as NotifRead
+
+usecase "Карта" as Map
+usecase "Смотреть(R)" as MapView
+usecase "Обновлять(при перемещении - U)" as MapUpdate
+
+usecase "Журнал" as Journal
+usecase "Смотреть активности(R)" as JournalView
+usecase "Помечать присутствие(U)" as JournalAttendance
+usecase "Создавать активности(C)" as JournalCreate
+usecase "Изменять активности(U)" as JournalEdit
+
+usecase "Профиль" as Profile
+usecase "Просмотр профиля(R)" as ProfileView
+usecase "Внесение изменений в профиль(U)" as ProfileEdit
+usecase "Удалить профиль(D)" as ProfileDelete
+
+usecase "Отряд" as Squad
+usecase "Смотреть список ребят в своём отряде(R)" as SquadView
+usecase "Изменять данные об участнике отряда(U)" as SquadEditMember
+usecase "Вносить детей в список отряда(C)" as SquadAdd
+usecase "Удалять детей из отряда(D)" as SquadRemove
+
+Child --> Auth
+Auth --> Login
+Auth --> Register
+Auth --> Logout
+
+Child --> Notif
+Notif --> NotifView
+Notif --> NotifConfirm
+Notif --> NotifRead
+
+Child --> Map
+Map --> MapView
+Map --> MapUpdate
+
+Child --> Journal
+Journal --> JournalView
+Journal --> JournalAttendance
+JournalCreate --> Journal
+JournalEdit --> Journal
+
+Child --> Profile
+Profile --> ProfileView
+Profile --> ProfileEdit
+Profile --> ProfileDelete
+
+Child --> Squad
+Squad --> SquadView
+SquadEditMember --> Squad
+SquadAdd --> Squad
+SquadRemove --> Squad
+
+Admin --> Squad
+Admin --> Journal
+
+@enduml

@@ -1,0 +1,191 @@
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+enum "TagType" as TagType {
+  Alert
+  Warning
+  Health
+}
+
+enum "UserRole" as UserRole {
+  Child
+  Admin
+}
+
+enum "MapObjectType" as MapObjectType {
+  Sports_playground
+  Dining_room
+  Housing
+}
+
+entity "User" as User {
+  id : UUID <<PK>>
+  --
+  full_name : varchar(100)
+  email : varchar(100)
+  password : text
+  avatar : varchar(100) <<nullable>>
+  phone_number : varchar(11)
+  guide_notes : text
+  Role : UserRole
+}
+
+entity "Tags" as Tags {
+  user_id : UUID <<FK>>
+  tag_type : TagType
+  tag_text : text
+}
+
+entity "Shift" as Shift {
+  id : UUID <<PK>>
+  --
+  shift_no : int
+  shift_start : timestamp
+  shift_end : timestamp
+}
+
+entity "Users_in_shifts" as Users_in_shifts {
+  user_id : UUID <<FK>>
+  shift_id : UUID <<FK>>
+}
+
+entity "Squad" as Squad {
+  id : UUID <<PK>>
+  --
+  title : varchar(150)
+  description : text
+}
+
+entity "Users_in_squads" as Users_in_squads {
+  user_id : UUID <<FK>>
+  squad_id : UUID <<FK>>
+}
+
+entity "Event" as Event {
+  id : UUID <<PK>>
+  --
+  title : varchar(150)
+  description : text
+  time_from : Timestamp
+  time_to : Timestamp
+}
+
+entity "EventAttendance" as EventAttendance {
+  id : UUID <<PK>>
+  --
+  event_id : UUID <<FK>>
+  user_id : UUID <<FK>>
+}
+
+entity "ActionLog" as ActionLog {
+  id : UUID <<PK>>
+  --
+  caused_by : UUID <<FK>>
+  created_at : Timestamp
+  event : text
+}
+
+entity "Notification" as Notification {
+  id : UUID <<PK>>
+  --
+  title : varchar(150)
+  description : text
+  sent_at : timestamp
+}
+
+entity "Notifications_read_by_users" as Notifications_read_by_users {
+  notif_id : UUID <<FK>>
+  user_id : UUID <<FK>>
+}
+
+entity "Message" as Message {
+  id : UUID <<PK>>
+  --
+  message : text
+  sent_at : timestamp
+  sender_id : UUID <<FK>>
+}
+
+entity "Message_read_by_users" as Message_read_by_users {
+  message_id : UUID <<FK>>
+  user_id : UUID <<FK>>
+  field : type <<TODO>>
+}
+
+entity "MapObject" as MapObject {
+  id : UUID <<PK>>
+  --
+  lat : decimal(2,20)
+  long : decimal(2,20)
+  title : varchar(150)
+  description : text
+  type : MapObjectType
+}
+
+entity "MapUser" as MapUser {
+  user_id : UUID <<FK>>
+  long : decimal(2,20)
+  lat : decimal(2,20)
+}
+
+User ||--o{ Tags : user_id
+User ||--o{ Users_in_shifts : user_id
+Shift ||--o{ Users_in_shifts : shift_id
+
+User ||--o{ Users_in_squads : user_id
+Squad ||--o{ Users_in_squads : squad_id
+
+User ||--o{ EventAttendance : user_id
+Event ||--o{ EventAttendance : event_id
+
+User ||--o{ ActionLog : caused_by
+
+Notification ||--o{ Notifications_read_by_users : notif_id
+User ||--o{ Notifications_read_by_users : user_id
+
+User ||--o{ Message : sender_id
+
+' В JSON: Message_read_by_users.message_id -> User.id
+User ||--o{ Message_read_by_users : message_id
+
+User ||--|| MapUser : user_id
+
+Tags --> TagType : tag_type
+User --> UserRole : Role
+MapObject --> MapObjectType : type
+
+note right of Shift
+  shift_end - shift_start <= 21 days
+end note
+
+note right of Event
+  1. time_from < time_to
+  2. минимальная длительность ~10–15 мин
+end note
+
+note right of EventAttendance
+  Автоматически создаётся при создании Event.
+  По умолчанию is_present = false,
+  но поля is_present в JSON нет.
+end note
+
+note bottom of Message_read_by_users
+  В JSON message_id связан с User.id.
+  Логически FK должен указывать на Message.id.
+end note
+
+note bottom of MapUser
+  MapUser.lat/long — динамические.
+  MapObject.lat/long — статические.
+end note
+
+note right of User
+  На User.id ссылаются:
+  Tags, Users_in_shifts, Users_in_squads,
+  EventAttendance, ActionLog, Notifications_read_by_users,
+  Message, Message_read_by_users, MapUser.
+end note
+
+@enduml

@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: campus
+      POSTGRES_PASSWORD: campus
+      POSTGRES_DB: campus
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campus -d campus"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://campus:campus@db:5432/campus
+      JWT_SECRET: ${JWT_SECRET:-campus-dev-secret-change-me}
+      JWT_EXPIRES_IN: 12h
+      BASE_DB_TYPE: postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    # Миграции применяются при старте; seed — вручную:
+    #   docker compose exec server node src/db/seed.js
+    restart: unless-stopped
+
+volumes:
+  pgdata:

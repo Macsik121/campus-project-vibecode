@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Лагерь – Вожатый</string>
+
+    <!-- Авторизация -->
+    <string name="login_title">Вход в систему</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="name_hint">Имя</string>
+    <string name="btn_login">Войти</string>
+    <string name="btn_register">Зарегистрироваться</string>
+    <string name="no_account">Нет аккаунта? Регистрация</string>
+    <string name="have_account">Уже есть аккаунт? Войти</string>
+    <string name="register_title">Регистрация вожатого</string>
+    <string name="application_sent">Заявка подана. Ожидайте одобрения директором.</string>
+    <string name="error_email_empty">Введите почту</string>
+    <string name="error_email_invalid">Некорректная почта</string>
+    <string name="error_password_empty">Введите пароль</string>
+    <string name="error_password_weak">Пароль: минимум 6 символов и 1 спецсимвол</string>
+    <string name="error_name_empty">Введите имя</string>
+
+    <!-- Навигация -->
+    <string name="nav_squad">Отряд</string>
+    <string name="nav_journal">Журнал</string>
+    <string name="nav_notifications">Уведомления</string>
+    <string name="nav_map">Карта</string>
+    <string name="nav_chat">Чат</string>
+    <string name="nav_profile">Профиль</string>
+    <string name="nav_logs">Логи</string>
+    <string name="nav_applications">Заявки</string>
+    <string name="nav_stats">Статистика</string>
+
+    <!-- Отряд -->
+    <string name="squad_title">Отряд</string>
+    <string name="squad_search_hint">Поиск по имени…</string>
+    <string name="squad_children_count">Всего детей: %1$d</string>
+    <string name="squad_not_assigned">Вы не привязаны к отряду. Обратитесь к старшему вожатому.</string>
+    <string name="child_age">%1$s лет</string>
+    <string name="child_parent">Родитель: %1$s</string>
+    <string name="child_parent_phone">Телефон: %1$s</string>
+    <string name="notes_hint">Заметки</string>
+    <string name="btn_save_notes">Сохранить заметки</string>
+
+    <!-- Журнал -->
+    <string name="journal_title">Журнал отряда</string>
+    <string name="journal_pick_date">Выбрать дату</string>
+    <string name="journal_attendance">Посещаемость</string>
+    <string name="journal_present_count">Присутствует: %1$d/%2$d</string>
+    <string name="journal_no_event">Присутствует: не выбрана активность</string>
+    <string name="journal_activities">Активности</string>
+
+    <!-- Уведомления -->
+    <string name="notif_title">Уведомления</string>
+    <string name="notif_unread_count">Непрочитанных: %1$d</string>
+    <string name="btn_read_all">Прочитать все</string>
+    <string name="btn_read">Прочитано</string>
+    <string name="notif_seconds">%1$d сек. назад</string>
+    <string name="notif_minutes">%1$d мин. назад</string>
+    <string name="notif_hours">%1$d ч. назад</string>
+    <string name="notif_days">%1$d дн. назад</string>
+
+    <!-- Профиль -->
+    <string name="profile_title">Профиль</string>
+    <string name="profile_personal">Личные данные</string>
+    <string name="profile_phone">Телефон</string>
+    <string name="btn_save_changes">Сохранить изменения</string>
+    <string name="btn_change_password">Сменить пароль</string>
+    <string name="btn_logout">Выйти из приложения</string>
+    <string name="profile_version">Приложение «Лагерь – Вожатый» Версия 1.0.0</string>
+    <string name="old_password">Текущий пароль</string>
+    <string name="new_password">Новый пароль</string>
+    <string name="password_changed">Пароль изменён</string>
+
+    <!-- Карта -->
+    <string name="map_stub">Раздел «Карта» в разработке.\nОтслеживание местоположения появится в следующей версии.</string>
+
+    <!-- Чат -->
+    <string name="chat_title">Общий чат</string>
+    <string name="chat_hint">Сообщение…</string>
+    <string name="chat_send">Отправить</string>
+
+    <!-- Админ -->
+    <string name="logs_title">Логи действий</string>
+    <string name="applications_title">Заявки вожатых</string>
+    <string name="btn_approve">Одобрить</string>
+    <string name="btn_reject">Отклонить</string>
+    <string name="reject_reason_hint">Причина отклонения</string>
+    <string name="btn_reject_all">Отклонить все ожидающие</string>
+    <string name="reject_all_reason">Необходимое количество вожатых на смену набралось</string>
+    <string name="stats_title">Статистика смены</string>
+    <string name="stats_events">Мероприятия по типам</string>
+    <string name="stats_attendance">Посещаемость: %1$d из %2$d</string>
+    <string name="stats_warnings">Предупреждения</string>
+
+    <!-- Общие -->
+    <string name="error_network">Ошибка сети. Проверьте подключение.</string>
+    <string name="loading">Загрузка…</string>
+</resources>

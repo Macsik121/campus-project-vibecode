@@ -1,0 +1,111 @@
+### CAMPUS API — smoke-сценарии (REST Client / curl)
+### Порядок: login → squad → children → notes → events → attendance → notifications → chat → logs → stats
+@base = http://localhost:3000/api/v1
+
+### 1. Вход директора
+# @name loginDirector
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"email": "director@campus.ru", "password": "Password1!"}
+
+### 2. Вход старшего вожатого
+# @name loginSenior
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"email": "senior@campus.ru", "password": "Password1!"}
+
+### 3. Вход вожатого (назначен на «Капельки»)
+# @name loginCounselour
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"email": "ivan@campus.ru", "password": "Password1!"}
+
+### 4. Отряд текущего вожатого
+# @name mySquad
+GET {{base}}/users/squad
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 5. Дети отряда
+# @name children
+GET {{base}}/squads/{{mySquad.response.body.squadId}}/children
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 6. Сохранить заметки ребёнка
+PUT {{base}}/children
+Authorization: Bearer {{loginCounselour.response.body.token}}
+Content-Type: application/json
+
+{"id": "{{children.response.body.children[0].id}}", "notes": "Обновлённые заметки из smoke"}
+
+### 7. Список мероприятий
+# @name events
+GET {{base}}/events?limit=10
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 8. Посещаемость мероприятия по отряду
+GET {{base}}/events/{{events.response.body[0].id}}/attendance/{{mySquad.response.body.squadId}}
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 9. Отметить ребёнка присутствующим
+POST {{base}}/events/{{events.response.body[0].id}}/attendance
+Authorization: Bearer {{loginCounselour.response.body.token}}
+Content-Type: application/json
+
+{"childId": "{{children.response.body[0].id}}", "present": true}
+
+### 10. Уведомления
+# @name notifs
+GET {{base}}/notifications?limit=20
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 11. Прочитать уведомление
+POST {{base}}/notifications/read
+Authorization: Bearer {{loginCounselour.response.body.token}}
+Content-Type: application/json
+
+{"notifId": "{{notifs.response.body.items[0].id}}"}
+
+### 12. Прочитать все
+POST {{base}}/notifications/read-all
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 13. Чат: отправить сообщение
+POST {{base}}/chat/messages
+Authorization: Bearer {{loginCounselour.response.body.token}}
+Content-Type: application/json
+
+{"message": "Привет из smoke-скрипта"}
+
+### 14. Чат: история
+GET {{base}}/chat/messages?limit=20
+Authorization: Bearer {{loginCounselour.response.body.token}}
+
+### 15. Логи действий (старший вожатый)
+GET {{base}}/logs?limit=20
+Authorization: Bearer {{loginSenior.response.body.token}}
+
+### 16. Статистика смены (директор)
+GET {{base}}/stats/shift
+Authorization: Bearer {{loginDirector.response.body.token}}
+
+### 17. Регистрация нового вожатого (заявка)
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{"name": "Новый Вожатый", "email": "newbie@campus.ru", "password": "Secret1!"}
+
+### 18. Заявки на рассмотрении (директор)
+# @name apps
+GET {{base}}/applications?status=pending
+Authorization: Bearer {{loginDirector.response.body.token}}
+
+### 19. Одобрить заявку
+POST {{base}}/applications/{{apps.response.body[0].id}}/approve
+Authorization: Bearer {{loginDirector.response.body.token}}
+
+### 20. Профиль
+GET {{base}}/users/profile
+Authorization: Bearer {{loginCounselour.response.body.token}}
