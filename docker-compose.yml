@@ -36,10 +36,16 @@ services:
       db:
         condition: service_healthy
     # Подключение телефона по Wi-Fi требует адреса в локальной сети, поэтому порт
-    # публикуется на все интерфейсы. Если 3000 занят — поменяйте на "3001:3000"
-    # (API снаружи будет на http://<IP>:3001, в android BASE_URL — тот же порт).
+    # публикуется на все интерфейсы.
+    # Порт задаётся переменной API_PORT (по умолчанию 3000). 3000 на этой машине
+    # постоянно занимает ДРУГОЙ контейнер (zeer_api), из-за чего старт падал с
+    # "port is already allocated", — поэтому в server/.env стоит API_PORT=3001.
+    # API снаружи будет на http://<IP>:${API_PORT}; в Android BASE_URL — тот же порт.
+    # API_PORT задаётся в shell (`API_PORT=3002 docker compose up`) или в корневом .env;
+    # по умолчанию 3000. server/.env сюда НЕ подключается: там DATABASE_URL на
+    # localhost:5432 — внутри контейнера это сломает подключение к БД.
     ports:
-      - "3000:3000"
+      - "${API_PORT:-3000}:3000"
     # Миграции применяются при старте; seed — вручную:
     #   docker compose exec server node src/db/seed.js
     restart: unless-stopped

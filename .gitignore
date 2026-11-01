@@ -1,0 +1,13 @@
+# Секреты и локальные настройки
+.env
+server/.env
+android/local.properties
+
+# Node
+node_modules/
+
+# Сборка Android
+android/.gradle/
+android/build/
+android/app/build/
+android/.idea/

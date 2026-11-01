@@ -24,7 +24,12 @@ docker compose exec server node src/db/seed.js   # демо-данные (одн
 docker compose ps                                # оба сервиса должны быть healthy/running
 ```
 
-API: `http://localhost:3000/api/v1` · Swagger UI: `http://localhost:3000/api-docs`
+API: `http://localhost:3001/api/v1` · Swagger UI: `http://localhost:3001/api-docs`
+
+Внешний порт API задаётся переменной `API_PORT` в корневом `.env` (по умолчанию **3001**:
+на машине разработчика порт 3000 постоянно занимает другой контейнер `zeer_api`).
+Внутри контейнера API всё так же слушает 3000. Сменить порт: `API_PORT=3002 docker compose up -d`.
+В Android тот же порт указывается в `campus.apiBaseUrl` — например `http://192.168.1.50:3001/`.
 
 Контекст сборки — корень репозитория, Dockerfile — `server/Dockerfile` (пути внутри него начинаются
 с `server/` и `docs/`). Если после обновления кода сборка странно кэшируется — `docker compose build --no-cache server`.
@@ -47,7 +52,7 @@ docker compose down -v               # остановить и удалить Б
 | `The server does not support SSL connections` | В `DATABASE_URL` есть `sslmode=require`/`verify-full`. Обновите `docker-compose.yml` (БД без sslmode), `server/src/db/pool.js` (TLS выключен; включается только `DATABASE_SSL=true`), затем `docker compose up -d --build`. |
 | `role "postgres" does not exist` | Создаётся только пользователь `campus` (POSTGRES_USER). Подключайтесь так: `docker compose exec db psql -U campus -d campus`. |
 | `role "root" does not exist` | `psql` без `-U` берёт имя пользователя ОС; всегда указывайте `-U campus`. |
-| `Bind for 0.0.0.0:3000 failed: port is already allocated` | Порт 3000 занят другим процессом или контейнером. Найти: `docker ps --filter publish=3000` и `netstat -ano \| findstr :3000` (Windows) / `ss -ltnp \| grep :3000`. Освободить (`docker stop <id>`, `taskkill /PID <pid> /F`) или поменять порт в `docker-compose.yml` на `"3001:3000"` — тогда API будет на `http://localhost:3001`. |
+| `Bind for 0.0.0.0:3000 failed: port is already allocated` | Порт 3000 занят другим процессом или контейнером (на этой машине — `zeer_api`). Найти: `docker ps --filter publish=3000` и `netstat -ano \| findstr :3000` (Windows) / `ss -ltnp \| grep :3000`. Освободить (`docker stop <id>`, `taskkill /PID <pid> /F`) или поменять `API_PORT` в корневом `.env` (по умолчанию уже 3001). Порт из `.env` читается автоматически. |
 | `socket access forbidden by permissions` / `port is already allocated` для 5432 | Windows (Hyper-V/WSL) резервирует диапазоны TCP-портов, либо 5432 занят локальным PostgreSQL. В compose порт БД наружу **не публикуется** — контейнер API обращается к ней по имени `db`. Для `psql` с хоста раскомментируйте блок `ports` у `db`, выбрав свободный порт (например `127.0.0.1:5433:5432`). |
 
 ## Быстрый старт (без Docker)
@@ -112,7 +117,7 @@ cd android
 В проекте есть обёртка Gradle (`gradlew`, `gradlew.bat`, `gradle\wrapper\`), отдельно ставить Gradle не нужно.
 
 Готовый debug-APK уже собран и лежит в `app/build/outputs/apk/debug/app-debug.apk` (~6.4 МБ)
-и собран с адресом API `http://10.0.2.2:3000/` — это адрес **эмулятора**, на реальном телефоне
+и собран с адресом API `http://10.0.2.2:3001/` — это адрес **эмулятора**, на реальном телефоне
 он не работает. Для телефона соберите APK под IP своего компьютера (шаг 2 ниже).
 
 ### Запуск на телефоне — по шагам
@@ -120,7 +125,7 @@ cd android
 **0. Предусловия**
 
 - Сервер CAMPUS уже запущен на компьютере (Docker: `docker compose up -d` и seed — см. выше;
-  или `npm start` в `server/`). Проверка с компьютера: `curl http://localhost:3000/health` → `{"status":"ok"}`.
+  или `npm start` в `server/`). Проверка с компьютера: `curl http://localhost:3001/health` → `{"status":"ok"}`.
 - Телефон и компьютер в **одной Wi-Fi/локальной сети** (телефон через мобильный интернет до IP вида
   `192.168.x.x` не достучится).
 - Либо подключён USB-кабель к компьютеру, где установлен Android SDK (команда `adb`).
@@ -134,24 +139,24 @@ ip -4 addr show | grep -oP 'inet \K[\d.]+' | grep -v 127.0.0.1   # или: hostn
 ipconfig        # строка «IPv4-адрес», например 192.168.1.50
 ```
 
-Пример: компьютер — `192.168.1.50`, значит адрес API для телефона — `http://192.168.1.50:3000/`
+Пример: компьютер — `192.168.1.50`, значит адрес API для телефона — `http://192.168.1.50:3001/`
 (в конце обязательно слеш `/`).
 
 **2. Собрать APK с этим адресом (правка кода не нужна)**
 
 ```bash
 cd android
-./gradlew assembleDebug -PcampusApiBaseUrl=http://192.168.1.50:3000/
+./gradlew assembleDebug -PcampusApiBaseUrl=http://192.168.1.50:3001/
 ```
 
 Либо один раз записать адрес в `android/local.properties` и дальше собирать обычным `./gradlew assembleDebug`:
 
 ```properties
 sdk.dir=/путь/до/Android/Sdk
-campus.apiBaseUrl=http://192.168.1.50:3000/
+campus.apiBaseUrl=http://192.168.1.50:3001/
 ```
 
-Приоритет: `-PcampusApiBaseUrl` → `campus.apiBaseUrl` в `local.properties` → `http://10.0.2.2:3000/` (эмулятор).
+Приоритет: `-PcampusApiBaseUrl` → `campus.apiBaseUrl` в `local.properties` → `http://10.0.2.2:3001/` (эмулятор).
 `local.properties` в git не коммитится — у каждого разработчика свой адрес.
 
 **3. Установить APK на телефон**
@@ -193,23 +198,23 @@ Android попросит разрешить установку из этого �
 1. Приложение открывается на экране входа. Логины из seed: `ivan@campus.ru` (вожатый, есть отряд),
    `senior@campus.ru`, `director@campus.ru`; пароль у всех — `Password1!`.
 2. Если видна ошибка сети — по порядку: сервер запущен? IP в `BASE_URL` совпадает с выводом шага 1
-   (после смены IP его нужно пересобрать)? телефон в той же сети? фаервол компьютера не блокирует порт 3000?
-   Проверка с телефона в браузере: открыть `http://192.168.1.50:3000/health` — должен вернуться JSON.
-3. Что показывает собранный адрес (диагностика): `strings app/build/outputs/apk/debug/app-debug.apk | grep 3000`
+   (после смены IP его нужно пересобрать)? телефон в той же сети? фаервол компьютера не блокирует порт 3001?
+   Проверка с телефона в браузере: открыть `http://192.168.1.50:3001/health` — должен вернуться JSON.
+3. Что показывает собранный адрес (диагностика): `strings app/build/outputs/apk/debug/app-debug.apk | grep 3001`
    или в Android Studio — `BuildConfig.BASE_URL`; на телефоне — `adb logcat | grep okhttp`.
 
 Фаервол (если браузер телефона не открывает `/health`):
 
 ```bash
-sudo ufw allow 3000/tcp          # Ubuntu
+sudo ufw allow 3001/tcp          # Ubuntu
 # Windows: разрешить Nginx/Node.js «частные сети» в окне запроса или:
-netsh advfirewall firewall add rule name="CAMPUS API" dir=in action=allow protocol=TCP localport=3000
+netsh advfirewall firewall add rule name="CAMPUS API" dir=in action=allow protocol=TCP localport=3001
 ```
 
 **5. Альтернатива — Android Studio**
 
 Открыть папку `android/` (File → Open), дождаться Gradle Sync, в `local.properties` добавить
-`campus.apiBaseUrl=http://192.168.1.50:3000/`, подключить телефон (шаг 3), выбрать его в списке
+`campus.apiBaseUrl=http://192.168.1.50:3001/`, подключить телефон (шаг 3), выбрать его в списке
 устройств и нажать **Run ▶** (`Shift+F10`). Логи — вкладка **Logcat**.
 
 Разделы (bottomNavigationView, по ролям): Отряд, Журнал, Уведомления, Карта (заглушка MVP), Чат, Профиль;

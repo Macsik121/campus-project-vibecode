@@ -28,6 +28,25 @@ android {
         buildConfigField "String", "BASE_URL", "\"${apiBaseUrl}\""
     }
 
+    // Один и тот же debug-ключ для сборок из Android Studio и из gradlew.
+    // Иначе Studio и командная строка подписывают APK разными ключами, и установка
+    // поверх падает с INSTALL_FAILED_UPDATE_INCOMPATIBLE (нужен adb uninstall).
+    // Ключ стандартный: ~/.android/debug.keystore (alias androiddebugkey, пароль android).
+    signingConfigs {
+        debug {
+            storeFile new File(System.getProperty('user.home'), '.android/debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+
     buildFeatures {
         viewBinding true
         buildConfig true

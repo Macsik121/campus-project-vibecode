@@ -1,178 +1,166 @@
 [
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_notification.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_notification.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_map.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_map.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_application.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_application.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_important.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_important.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_bg_event_selected.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/bg_event_selected.xml"
+        "merged": "ru.campus.app-debug-32:/layout_item_notification.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_notification.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_logs.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_logs.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_profile.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_profile.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_event.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_event.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_bg_chat_other.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/bg_chat_other.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_stats.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_stats.xml"
+        "merged": "ru.campus.app-debug-32:/menu_bottom_nav.xml.flat",
+        "source": "ru.campus.app-main-34:/menu/bottom_nav.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/menu_bottom_nav.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/menu/bottom_nav.xml"
+        "merged": "ru.campus.app-debug-32:/layout_activity_main.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/activity_main.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/mipmap-mdpi_ic_launcher.png.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/mipmap-mdpi/ic_launcher.png"
+        "merged": "ru.campus.app-debug-32:/layout_item_event.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_event.xml"
     },
     {
-        "merged": "ru.campus.app-debug-4:/layout_item_child.xml.flat",
-        "source": "ru.campus.app-main-6:/layout/item_child.xml"
+        "merged": "ru.campus.app-debug-32:/layout_item_child.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_child.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_bg_notification_read.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/bg_notification_read.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_bg_chat_mine.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/bg_chat_mine.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/mipmap-xhdpi_ic_launcher.png.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/mipmap-xhdpi/ic_launcher.png"
+        "merged": "ru.campus.app-debug-32:/drawable_bg_notification_unread.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/bg_notification_unread.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_notifications.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_notifications.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_notifications.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_notifications.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_chat.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_chat.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_chat.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_chat.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_notifications.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_notifications.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_journal.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_journal.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_dialog_password.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/dialog_password.xml"
+        "merged": "ru.campus.app-debug-32:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "ru.campus.app-main-34:/mipmap-xhdpi/ic_launcher.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_profile.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_profile.xml"
+        "merged": "ru.campus.app-debug-32:/layout_activity_register.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/activity_register.xml"
     },
     {
-        "merged": "ru.campus.app-debug-4:/layout_item_application.xml.flat",
-        "source": "ru.campus.app-main-6:/layout/item_application.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_squad.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_squad.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_profile.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_profile.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_bg_event_selected.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/bg_event_selected.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_dialog_notes.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/dialog_notes.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_profile.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_profile.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_activity_register.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/activity_register.xml"
+        "merged": "ru.campus.app-debug-32:/layout_activity_login.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/activity_login.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_map.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_map.xml"
+        "merged": "ru.campus.app-debug-32:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "ru.campus.app-main-34:/mipmap-hdpi/ic_launcher.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_attendance.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_attendance.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_info.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_info.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_child.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_child.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_applications.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_applications.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_squad.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_squad.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_squad.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_squad.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_bg_event_normal.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/bg_event_normal.xml"
+        "merged": "ru.campus.app-debug-32:/layout_item_log.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_log.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_chat.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_chat.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_bg_notification_read.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/bg_notification_read.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_activity_main.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/activity_main.xml"
+        "merged": "ru.campus.app-debug-32:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "ru.campus.app-main-34:/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_activity_login.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/activity_login.xml"
+        "merged": "ru.campus.app-debug-32:/layout_item_chat_message.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_chat_message.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_bg_notification_unread.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/bg_notification_unread.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_stats.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_stats.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_bg_chat_mine.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/bg_chat_mine.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_bg_event_normal.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/bg_event_normal.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_journal.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_journal.xml"
+        "merged": "ru.campus.app-debug-32:/layout_item_attendance.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_attendance.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/mipmap-hdpi_ic_launcher.png.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/mipmap-hdpi/ic_launcher.png"
+        "merged": "ru.campus.app-debug-32:/layout_item_application.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/item_application.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_chat_message.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_chat_message.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_journal.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_journal.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_item_log.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/item_log.xml"
+        "merged": "ru.campus.app-debug-32:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "ru.campus.app-main-34:/mipmap-xxhdpi/ic_launcher.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_important.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_important.xml"
+        "merged": "ru.campus.app-debug-32:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "ru.campus.app-main-34:/mipmap-mdpi/ic_launcher.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_bg_chat_other.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/bg_chat_other.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_chat.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_chat.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/mipmap-xxhdpi_ic_launcher.png.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/mipmap-xxhdpi/ic_launcher.png"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_logs.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_logs.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_info.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_info.xml"
+        "merged": "ru.campus.app-debug-32:/drawable_ic_map.xml.flat",
+        "source": "ru.campus.app-main-34:/drawable/ic_map.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/mipmap-xxxhdpi_ic_launcher.png.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/mipmap-xxxhdpi/ic_launcher.png"
+        "merged": "ru.campus.app-debug-32:/layout_dialog_notes.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/dialog_notes.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_journal.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_journal.xml"
+        "merged": "ru.campus.app-debug-32:/layout_dialog_password.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/dialog_password.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/drawable_ic_map.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/drawable/ic_map.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_applications.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_applications.xml"
-    },
-    {
-        "merged": "ru.campus.app-debug-4:/layout_activity_main.xml.flat",
-        "source": "ru.campus.app-main-6:/layout/activity_main.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.7/ru.campus.app-debug-4:/layout_fragment_squad.xml.flat",
-        "source": "/root/.gradle/daemon/8.7/ru.campus.app-main-6:/layout/fragment_squad.xml"
+        "merged": "ru.campus.app-debug-32:/layout_fragment_notifications.xml.flat",
+        "source": "ru.campus.app-main-34:/layout/fragment_notifications.xml"
     }
 ]
