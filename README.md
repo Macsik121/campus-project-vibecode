@@ -47,7 +47,8 @@ docker compose down -v               # остановить и удалить Б
 | `The server does not support SSL connections` | В `DATABASE_URL` есть `sslmode=require`/`verify-full`. Обновите `docker-compose.yml` (БД без sslmode), `server/src/db/pool.js` (TLS выключен; включается только `DATABASE_SSL=true`), затем `docker compose up -d --build`. |
 | `role "postgres" does not exist` | Создаётся только пользователь `campus` (POSTGRES_USER). Подключайтесь так: `docker compose exec db psql -U campus -d campus`. |
 | `role "root" does not exist` | `psql` без `-U` берёт имя пользователя ОС; всегда указывайте `-U campus`. |
-| Порт 3000 или 5432 занят | `port is already allocated` — остановите локальный PostgreSQL/сервер или поменяйте левую часть `ports` в `docker-compose.yml`. |
+| `Bind for 0.0.0.0:3000 failed: port is already allocated` | Порт 3000 занят другим процессом или контейнером. Найти: `docker ps --filter publish=3000` и `netstat -ano \| findstr :3000` (Windows) / `ss -ltnp \| grep :3000`. Освободить (`docker stop <id>`, `taskkill /PID <pid> /F`) или поменять порт в `docker-compose.yml` на `"3001:3000"` — тогда API будет на `http://localhost:3001`. |
+| `port is already allocated` для 5432 | Локальный PostgreSQL уже слушает 5432. В compose порт БД привязан к `127.0.0.1`; если он всё равно занят — закомментируйте блок `ports` у `db`: контейнеру API БД доступна по имени `db` без публикации порта. |
 
 ## Быстрый старт (без Docker)
 
@@ -100,6 +101,15 @@ WebSocket (socket.io): JWT на handshake (`auth.token`); события `notifi
 cd android
 ./gradlew assembleDebug     # APK: app/build/outputs/apk/debug/app-debug.apk
 ```
+
+Windows (PowerShell/cmd) — через `gradlew.bat`, префикс `.\` в PowerShell обязателен:
+
+```powershell
+cd android
+.\gradlew.bat assembleDebug
+```
+
+В проекте есть обёртка Gradle (`gradlew`, `gradlew.bat`, `gradle\wrapper\`), отдельно ставить Gradle не нужно.
 
 Готовый debug-APK уже собран и лежит в `app/build/outputs/apk/debug/app-debug.apk` (~6.4 МБ)
 и собран с адресом API `http://10.0.2.2:3000/` — это адрес **эмулятора**, на реальном телефоне
