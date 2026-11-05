@@ -12,18 +12,20 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    # Порт БД наружу не публикуется: контейнер API ходит к ней по docker-сети
-    # (хостнейм db). Windows нередко резервирует диапазоны портов (Hyper-V/WSL),
-    # и 5432 тогда не биндится: "socket access forbidden by permissions".
-    # Нужен psql с хоста — раскомментируйте блок, выбрав свободный порт:
-    # ports:
-    #   - "127.0.0.1:5433:5432"
+    # БД публикуется на хосте на 127.0.0.1:5458 (только для локальных клиентов
+    # вроде psql; контейнер API ходит к ней по docker-сети по имени db:5432).
+    # 5432 на этой машине занят другим проектом (zeer_postgres), а сам порт
+    # ограничен loopback-адресом, чтобы БД не была доступна из локальной сети.
+    ports:
+      - "127.0.0.1:5458:5432"
 
   server:
     build:
       context: .
       dockerfile: server/Dockerfile
     environment:
+      # Внутри контейнера приложение всегда слушает 3000; наружу порт публикуется
+      # как API_PORT (по умолчанию 3008, см. ниже).
       PORT: 3000
       # Без sslmode: через внутреннюю docker-сеть соединение идёт по TCP без TLS,
       # а клиент pg по умолчанию TLS не требует. (sslmode=require здесь ломает
@@ -37,15 +39,15 @@ services:
         condition: service_healthy
     # Подключение телефона по Wi-Fi требует адреса в локальной сети, поэтому порт
     # публикуется на все интерфейсы.
-    # Порт задаётся переменной API_PORT (по умолчанию 3000). 3000 на этой машине
+    # Порт задаётся переменной API_PORT (по умолчанию 3008). 3000 на этой машине
     # постоянно занимает ДРУГОЙ контейнер (zeer_api), из-за чего старт падал с
-    # "port is already allocated", — поэтому в server/.env стоит API_PORT=3001.
+    # "port is already allocated".
     # API снаружи будет на http://<IP>:${API_PORT}; в Android BASE_URL — тот же порт.
-    # API_PORT задаётся в shell (`API_PORT=3002 docker compose up`) или в корневом .env;
-    # по умолчанию 3000. server/.env сюда НЕ подключается: там DATABASE_URL на
+    # API_PORT задаётся в shell (`API_PORT=3009 docker compose up`) или в корневом .env;
+    # по умолчанию 3008. server/.env сюда НЕ подключается: там DATABASE_URL на
     # localhost:5432 — внутри контейнера это сломает подключение к БД.
     ports:
-      - "${API_PORT:-3000}:3000"
+      - "${API_PORT:-3008}:3000"
     # Миграции применяются при старте; seed — вручную:
     #   docker compose exec server node src/db/seed.js
     restart: unless-stopped

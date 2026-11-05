@@ -19,9 +19,9 @@
 Из корня репозитория (`/campus`, где лежит `docker-compose.yml`):
 
 ```bash
-docker compose up --build -d
-docker compose exec server node src/db/seed.js   # демо-данные (однократно)
-docker compose ps                                # оба сервиса должны быть healthy/running
+docker up --build -d
+docker exec campus-project-vibecode-server-1 node src/db/seed.js   # демо-данные (однократно)
+docker ps                                # оба сервиса должны быть healthy/running
 ```
 
 API: `http://localhost:3001/api/v1` · Swagger UI: `http://localhost:3001/api-docs`
@@ -37,10 +37,10 @@ API: `http://localhost:3001/api/v1` · Swagger UI: `http://localhost:3001/api-do
 Логи и управление:
 
 ```bash
-docker compose logs -f server        # логи API (миграции применяются при старте)
-docker compose exec db psql -U campus -d campus -c '\dt'
-docker compose down                  # остановить (данные остаются в volume pgdata)
-docker compose down -v               # остановить и удалить БД
+docker logs -f campus-project-vibecode-server-1         # логи API (миграции применяются при старте)
+docker exec campus-project-vibecode-db-1 psql -U campus -d campus -c '\dt'
+docker down                  # остановить (данные остаются в volume pgdata)
+docker down -v               # остановить и удалить БД
 ```
 
 ### Диагностика Docker (частые ошибки)
